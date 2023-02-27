@@ -16,10 +16,10 @@ class MainBoard:
 
 class phone:
     def __init__(self, radius, bitPrice, x, y):
-         self.radius = 0
-         self.bitPrice = 0
-         self.x = 0
-         self.y = 0
+         self.radius = radius
+         self.bitPrice = bitPrice
+         self.x = x
+         self.y = y
          
 
     
