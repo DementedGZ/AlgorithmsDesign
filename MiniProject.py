@@ -1,7 +1,18 @@
 import random
+class phone:
+    def __init__(self,x,y,bidprice,name):
+         self.name = name
+         self.bidPrice = bidprice
+         self.x = x
+         self.y = y
+
 class MainBoard:
     MAXSIZE = 100
+    RADIUS = 5
     phones = [MAXSIZE]
+    for x in phones:
+        name = 'OBJECT_' + x
+        phones[x] = phone(0,0,0,name)
     algo = random.randint(0,2)
     if algo == 0:
         print("Uniform")
@@ -12,14 +23,6 @@ class MainBoard:
     else:
         print("Distributed")
         #distributed algo goes here
-        
-
-class phone:
-    def __init__(self, radius, bitPrice, x, y):
-         self.radius = 0
-         self.bitPrice = 0
-         self.x = 0
-         self.y = 0
          
 
     
