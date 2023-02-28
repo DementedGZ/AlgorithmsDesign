@@ -11,18 +11,21 @@ class MainBoard:
     RADIUS = 5
     phones = [MAXSIZE]
     for x in phones:
-        name = 'OBJECT_' + x
+        name = 'OBJECT_' + str(x)
         phones[x] = phone(0,0,0,name)
     algo = random.randint(0,2)
+    def overlap(phones, x, y):
+        
     if algo == 0:
         print("Uniform")
         # uniform algo goes here
     elif algo == 1:
         print("Cluster")
         # cluster algo goes here
-    else:
+    elif algo == 2:
         print("Distributed")
-        #distributed algo goes here
-         
+        
+    else:
+        print("ERROR")
 
     
