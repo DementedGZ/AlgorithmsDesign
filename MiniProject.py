@@ -19,14 +19,14 @@ class MainBoard:
 
     def overlap(phones, x, y, i):
         for i in range(100):
-            if getattr(phones[i], phones[i].x) == x and getattr(phones[i], phones[i].y) == y:
+            if getattr(phones[i], phone.x) == x and getattr(phones[i], phone.y) == y:
                 return i - 1
             else:
                 return i
-            
+
     for i in range(5):
-        setattr(phones[i], phones[i].x, random.randint(0,1))
-        setattr(phones[i], phones[i].y, random.randint(0,1))
+        setattr(phones[i], phone.x, random.randint(0,1))
+        setattr(phones[i], phone.y, random.randint(0,1))
         print("x: " + getattr(phones[i], phones[i].x) + "\ny: " + getattr(phones[i], phones[i].y) + "\n\n")
         print(overlap(phones[0], phones[i].x, phones[i].y), i)
         
