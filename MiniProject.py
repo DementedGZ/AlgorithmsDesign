@@ -33,23 +33,19 @@ class Participants2:
         self.isCovered1 = False
         self.isUsed1 = False
         
-        # Place point in appropriate radius based on price
         if self.price < 3:
-            # Place point in radius1 of point1
             self.x1 = random.randint(0, 1000)
             self.y1 = random.randint(0, 1000)
             while (((self.x1 - point1x)**2 + (self.y1 - point1y)**2)**0.5) > self.radius1:
                 self.x1 = random.randint(0, 1000)
                 self.y1 = random.randint(0, 1000)
         elif self.price >= 3 and self.price < 5:
-            # Place point in radius2 of point2
             self.x1 = random.randint(0, 1000)
             self.y1 = random.randint(0, 1000)
             while (((self.x1 - point2x)**2 + (self.y1 - point2y)**2)**0.5) > self.radius2:
                 self.x1 = random.randint(0, 1000)
                 self.y1 = random.randint(0, 1000)
         else:
-            # Place point in radius3 of point3
             self.x1 = random.randint(0, 1000)
             self.y1 = random.randint(0, 1000)
             while (((self.x1 - point3x)**2 + (self.y1 - point3y)**2)**0.5) > self.radius3:
