@@ -7,11 +7,11 @@ point1y = (random.randint(200, 800))
 distance = 0
 distance1 = 0
 distance2 = 0
-while distance < 100:
+while distance < 400:
     point2x = (random.randint(200, 800))
     point2y = (random.randint(200, 800))
     distance = ((point2x - point1x)**2 + (point2y - point1y)**2)**0.5
-while (distance1 < 100) | (distance2 < 100):
+while (distance1 < 400) | (distance2 < 400):
     point3x = (random.randint(200, 800))
     point3y = (random.randint(200, 800))
     distance1 = ((point3x - point1x)**2 + (point3y - point1y)**2)**0.5
@@ -67,17 +67,17 @@ prices1 = [a.price1 for a in participants2]
 # colors points on the first graph
 colors = []
 for price in prices:
-    if 1 <= price <= 3:
+    if 1 <= price < 3:
         colors.append('red')
-    elif 3 < price <= 5:
+    elif 3 <= price < 5:
         colors.append('blue')
     else:
         colors.append('green')
 colors1 = []
 for price in prices1:
-    if 1 <= price <= 3:
+    if 1 <= price < 3:
         colors1.append('red')
-    elif 3 < price <= 5:
+    elif 3 <= price < 5:
         colors1.append('blue')
     else:
         colors1.append('green')
@@ -94,11 +94,11 @@ while (budget>0):
         bestparticipantcount=0
         for i in participants2:
             if(i.isCovered1==False) & (p.isUsed1==False) & (p.price1<budget):
-                if((((p.x1-i.x1)**2+(p.y1-i.y1)**2)**0.5)<=50) & (i.isCovered1==False):
+                if((((p.x1-i.x1)**2+(p.y1-i.y1)**2)**0.5)<=100) & (i.isCovered1==False):
                     p1count=p1count+1
                 if(bestparticipant == None):
                     bestparticipant=p
-                if((((bestparticipant.x1-i.x1)**2+(bestparticipant.y1-i.y1)**2)**0.5)<=50) & (i.isCovered1==False):
+                if((((bestparticipant.x1-i.x1)**2+(bestparticipant.y1-i.y1)**2)**0.5)<=100) & (i.isCovered1==False):
                     bestparticipantcount=bestparticipantcount+1
         if(bestparticipant.isCovered1==False):
             bestparticipantcount=bestparticipantcount+1
@@ -112,10 +112,10 @@ while (budget>0):
     bestparticipant.isUsed1=True
     bestparticipant.isCovered1=True
     #print(budget)
-    circle = plt.Circle((bestparticipant.x1, bestparticipant.y1), 50 ,fill = False)
+    circle = plt.Circle((bestparticipant.x1, bestparticipant.y1), 100 ,fill = False)
     ax2.add_artist(circle)
     for e in participants2:
-        if((((e.x1-bestparticipant.x1)**2+(e.y1-bestparticipant.y1)**2)**0.5)<=50):
+        if((((e.x1-bestparticipant.x1)**2+(e.y1-bestparticipant.y1)**2)**0.5)<=100):
             e.isCovered1=True
             
 budget=50
@@ -127,11 +127,11 @@ while (budget>0):
         bestparticipantcount=0
         for i in participants:
             if(i.isCovered==False) & (p.isUsed==False) & (p.price<budget):
-                if((((p.x-i.x)**2+(p.y-i.y)**2)**0.5)<=50) & (i.isCovered==False):
+                if((((p.x-i.x)**2+(p.y-i.y)**2)**0.5)<=100) & (i.isCovered==False):
                     p1count=p1count+1
                 if(bestparticipant == None):
                     bestparticipant=p
-                if((((bestparticipant.x-i.x)**2+(bestparticipant.y-i.y)**2)**0.5)<=50) & (i.isCovered==False):
+                if((((bestparticipant.x-i.x)**2+(bestparticipant.y-i.y)**2)**0.5)<=100) & (i.isCovered==False):
                     bestparticipantcount=bestparticipantcount+1
         if(bestparticipant.isCovered==False):
             bestparticipantcount=bestparticipantcount+1
@@ -144,10 +144,10 @@ while (budget>0):
     budget=budget-bestparticipant.price
     bestparticipant.isUsed=True
     bestparticipant.isCovered=True  
-    circle = plt.Circle((bestparticipant.x, bestparticipant.y), 50 ,fill = False)
+    circle = plt.Circle((bestparticipant.x, bestparticipant.y), 100 ,fill = False)
     ax1.add_artist(circle)
     for e in participants:
-        if((((e.x-bestparticipant.x)**2+(e.y-bestparticipant.y)**2)**0.5)<=50):
+        if((((e.x-bestparticipant.x)**2+(e.y-bestparticipant.y)**2)**0.5)<=100):
             e.isCovered=True
     
     
