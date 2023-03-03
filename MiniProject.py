@@ -153,8 +153,11 @@ while (budget>0):
     
         
 # plot participants on a scatter plot and show prices
+
 ax1.scatter(x, y, c=colors)
 ax2.scatter(x1, y1, c=colors1)
+ax1.set_title("Distributed")
+ax2.set_title("Cluster")
 for i, price in enumerate(prices):
     ax1.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,10), ha='center')
 for i, price1 in enumerate(prices1):
