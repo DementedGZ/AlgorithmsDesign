@@ -29,29 +29,82 @@ class Participants2:
         self.radius1 = random.randint(100, 300)
         self.radius2 = random.randint(100, 300)
         self.radius3 = random.randint(100, 300)
-        self.price1 = round(random.uniform(1, 7), 2)
-        self.isCovered1 = False
-        self.isUsed1 = False
+        self.price = round(random.uniform(1, 7), 2)
+        self.isCovered = False
+        self.isUsed = False
         
-        if self.price1 < 3:
-            self.x1 = random.randint(0, 1000)
-            self.y1 = random.randint(0, 1000)
-            while (((self.x1 - point1x)**2 + (self.y1 - point1y)**2)**0.5) > self.radius1:
-                self.x1 = random.randint(0, 1000)
-                self.y1 = random.randint(0, 1000)
-        elif self.price1 >= 3 and self.price1 < 5:
-            self.x1 = random.randint(0, 1000)
-            self.y1 = random.randint(0, 1000)
-            while (((self.x1 - point2x)**2 + (self.y1 - point2y)**2)**0.5) > self.radius2:
-                self.x1 = random.randint(0, 1000)
-                self.y1 = random.randint(0, 1000)
+        if self.price < 3:
+            self.x = random.randint(0, 1000)
+            self.y = random.randint(0, 1000)
+            while (((self.x - point1x)**2 + (self.y - point1y)**2)**0.5) > self.radius1:
+                self.x = random.randint(0, 1000)
+                self.y = random.randint(0, 1000)
+        elif self.price >= 3 and self.price < 5:
+            self.x = random.randint(0, 1000)
+            self.y = random.randint(0, 1000)
+            while (((self.x - point2x)**2 + (self.y - point2y)**2)**0.5) > self.radius2:
+                self.x = random.randint(0, 1000)
+                self.y = random.randint(0, 1000)
         else:
-            self.x1 = random.randint(0, 1000)
-            self.y1 = random.randint(0, 1000)
-            while (((self.x1 - point3x)**2 + (self.y1 - point3y)**2)**0.5) > self.radius3:
-                self.x1 = random.randint(0, 1000)
-                self.y1 = random.randint(0, 1000)
+            self.x = random.randint(0, 1000)
+            self.y = random.randint(0, 1000)
+            while (((self.x - point3x)**2 + (self.y - point3y)**2)**0.5) > self.radius3:
+                self.x = random.randint(0, 1000)
+                self.y = random.randint(0, 1000)
+
+def reset_participants(participants):
+    for participant in participants:
+        participant.isUsed = False
+        participant.isCovered = False
         
+def plot_coverage(cls, ax):
+    budget = 50
+    bestparticipant = None
+    participants = cls
+    while budget > 0:
+        for p in participants:
+            p1count = 0
+            bestparticipantcount = 0
+            for i in participants:
+                if (not i.isCovered) and (not p.isUsed) and (p.price < budget):
+                    dist = ((p.x - i.x) ** 2 + (p.y - i.y) ** 2) ** 0.5
+                    if dist <= 100 and not i.isCovered:
+                        p1count += 1
+                    if bestparticipant is None:
+                        bestparticipant = p
+                    dist_to_i = ((bestparticipant.x - i.x) ** 2 + (bestparticipant.y - i.y) ** 2) ** 0.5
+                    if dist_to_i <= 100 and not i.isCovered:
+                        bestparticipantcount += 1
+            if not bestparticipant.isCovered:
+                bestparticipantcount += 1
+            if not p.isCovered:
+                p1count += 1
+                if p1count / p.price >= bestparticipantcount / bestparticipant.price:
+                    bestparticipant = p
+        if budget - bestparticipant.price <= 0:
+            break
+        budget -= bestparticipant.price
+        bestparticipant.isUsed = True
+        bestparticipant.isCovered = True  
+        circle = plt.Circle((bestparticipant.x, bestparticipant.y), 100 ,fill=False)
+        ax.add_artist(circle)
+        for e in participants:
+            dist_to_best = ((e.x - bestparticipant.x) ** 2 + (e.y - bestparticipant.y) ** 2) ** 0.5
+            if dist_to_best <= 100:
+                e.isCovered = True
+
+
+def create_circles(participants, ax):
+    budget = 50
+    for participant in participants:
+        if (participant.isUsed == False) & (budget > participant.price):
+            random_participant = random.choice(participants)
+            circle = plt.Circle((random_participant.x, random_participant.y), 100, fill=False)
+            ax.add_artist(circle)
+            budget=budget-random_participant.price
+            if budget < 0:
+                break
+            
 # create 100 participants
 participants = [Participants() for _ in range(100)]
 participants2 = [Participants2() for _ in range(100)]
@@ -60,9 +113,9 @@ participants2 = [Participants2() for _ in range(100)]
 x = [p.x for p in participants]
 y = [p.y for p in participants]
 prices = [p.price for p in participants]
-x1 = [a.x1 for a in participants2]
-y1 = [a.y1 for a in participants2]
-prices1 = [a.price1 for a in participants2]
+x1 = [a.x for a in participants2]
+y1 = [a.y for a in participants2]
+prices1 = [a.price for a in participants2]
 
 # colors points on the first graph
 colors = []
@@ -82,84 +135,32 @@ for price in prices1:
     else:
         colors1.append('green')
 fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 10))
+# fig, (ax3, ax4) = plt.subplots(nrows=1, ncols=2, figsize=(10, 10))
+# fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2, figsize=(10, 10))
 
 
-# circles the best point with the lowest cost per participant covered for the completely random graph
-budget=50
-#Covered=0
-bestparticipant=None
-while (budget>0):
-    for p in participants2:
-        p1count=0
-        bestparticipantcount=0
-        for i in participants2:
-            if(i.isCovered1==False) & (p.isUsed1==False) & (p.price1<budget):
-                if((((p.x1-i.x1)**2+(p.y1-i.y1)**2)**0.5)<=100) & (i.isCovered1==False):
-                    p1count=p1count+1
-                if(bestparticipant == None):
-                    bestparticipant=p
-                if((((bestparticipant.x1-i.x1)**2+(bestparticipant.y1-i.y1)**2)**0.5)<=100) & (i.isCovered1==False):
-                    bestparticipantcount=bestparticipantcount+1
-        if(bestparticipant.isCovered1==False):
-            bestparticipantcount=bestparticipantcount+1
-        if(p.isCovered1==False):
-            p1count=p1count+1
-            if ((p1count/p.price1) >= (bestparticipantcount/bestparticipant.price1)):
-                bestparticipant=p                          
-    if(budget-bestparticipant.price1<=0):
-        break
-    budget=budget-bestparticipant.price1
-    bestparticipant.isUsed1=True
-    bestparticipant.isCovered1=True
-    #print(budget)
-    circle = plt.Circle((bestparticipant.x1, bestparticipant.y1), 100 ,fill = False)
-    ax2.add_artist(circle)
-    for e in participants2:
-        if((((e.x1-bestparticipant.x1)**2+(e.y1-bestparticipant.y1)**2)**0.5)<=100):
-            e.isCovered1=True
-            
-budget=50
-#Covered=0
-bestparticipant=None
-while (budget>0):
-    for p in participants:
-        p1count=0
-        bestparticipantcount=0
-        for i in participants:
-            if(i.isCovered==False) & (p.isUsed==False) & (p.price<budget):
-                if((((p.x-i.x)**2+(p.y-i.y)**2)**0.5)<=100) & (i.isCovered==False):
-                    p1count=p1count+1
-                if(bestparticipant == None):
-                    bestparticipant=p
-                if((((bestparticipant.x-i.x)**2+(bestparticipant.y-i.y)**2)**0.5)<=100) & (i.isCovered==False):
-                    bestparticipantcount=bestparticipantcount+1
-        if(bestparticipant.isCovered==False):
-            bestparticipantcount=bestparticipantcount+1
-        if(p.isCovered==False):
-            p1count=p1count+1
-            if ((p1count/p.price) >= (bestparticipantcount/bestparticipant.price)):
-                bestparticipant=p                          
-    if(budget-bestparticipant.price<=0):
-        break
-    budget=budget-bestparticipant.price
-    bestparticipant.isUsed=True
-    bestparticipant.isCovered=True  
-    circle = plt.Circle((bestparticipant.x, bestparticipant.y), 100 ,fill = False)
-    ax1.add_artist(circle)
-    for e in participants:
-        if((((e.x-bestparticipant.x)**2+(e.y-bestparticipant.y)**2)**0.5)<=100):
-            e.isCovered=True
+
     
-    
-        
-# plot participants on a scatter plot and show prices
+plot_coverage(participants,ax1)
+plot_coverage(participants2,ax2)
+# reset_participants(participants)
+# reset_participants(participants2)
+# create_circles(participants, ax3)
+# create_circles(participants2, ax4)
 
 ax1.scatter(x, y, c=colors)
 ax2.scatter(x1, y1, c=colors1)
+# ax3.scatter(x, y, c=colors)
+# ax4.scatter(x1, y1, c=colors1)
+
 ax1.set_title("Distributed")
 ax2.set_title("Cluster")
 for i, price in enumerate(prices):
     ax1.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,10), ha='center')
 for i, price1 in enumerate(prices1):
     ax2.annotate(str(price1), (x1[i], y1[i]), textcoords="offset points", xytext=(0,10), ha='center')
+# for i, price in enumerate(prices):
+#     ax3.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,10), ha='center')
+# for i, price1 in enumerate(prices1):
+#     ax4.annotate(str(price1), (x1[i], y1[i]), textcoords="offset points", xytext=(0,10), ha='center')
 plt.show()
