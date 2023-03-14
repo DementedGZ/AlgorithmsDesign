@@ -2,21 +2,27 @@ import random
 import math
 import matplotlib.pyplot as plt
 
+# Generate three random points to use later
 point1x = (random.randint(200, 800))
 point1y = (random.randint(200, 800))
 distance = 0
 distance1 = 0
 distance2 = 0
+
+# Ensure that the distance between the first two points is at least 400
 while distance < 400:
     point2x = (random.randint(200, 800))
     point2y = (random.randint(200, 800))
     distance = ((point2x - point1x)**2 + (point2y - point1y)**2)**0.5
+
+# Ensure that the distance between the third point and the first two points is at least 400
 while (distance1 < 400) | (distance2 < 400):
     point3x = (random.randint(200, 800))
     point3y = (random.randint(200, 800))
     distance1 = ((point3x - point1x)**2 + (point3y - point1y)**2)**0.5
     distance2 = ((point3x - point2x)**2 + (point3y - point2y)**2)**0.5
 
+# Define a class to represent participants with a price, x-coordinate, y-coordinate, and whether they are covered or used
 class Participants:
     def __init__(self):
         self.price = round(random.uniform(1, 7), 2)
@@ -24,6 +30,8 @@ class Participants:
         self.y = random.randint(0, 1000)
         self.isCovered = False
         self.isUsed = False
+
+# Define a class to represent participants with radii and price
 class Participants2:
     def __init__(self):
         self.radius1 = random.randint(100, 300)
@@ -33,6 +41,7 @@ class Participants2:
         self.isCovered = False
         self.isUsed = False
         
+        # Determine the participant's position based on their price and the radii of the three circles
         if self.price < 3:
             self.x = random.randint(0, 1000)
             self.y = random.randint(0, 1000)
@@ -51,12 +60,19 @@ class Participants2:
             while (((self.x - point3x)**2 + (self.y - point3y)**2)**0.5) > self.radius3:
                 self.x = random.randint(0, 1000)
                 self.y = random.randint(0, 1000)
-
+# Define two functions to reset the isUsed and isCovered attributes of all participants, and to count the number of covered participants
 def reset_participants(participants):
     for participant in participants:
         participant.isUsed = False
         participant.isCovered = False
         
+def amount_covered(participants):
+    amount=0
+    for participant in participants:
+        if participant.isCovered | participant.isUsed:
+            amount = amount +1
+    return amount
+       
 def plot_coverage(cls, ax):
     budget = 50
     bestparticipant = None
@@ -94,16 +110,55 @@ def plot_coverage(cls, ax):
                 e.isCovered = True
 
 
-def create_circles(participants, ax):
+def random_circles(participants, ax):
     budget = 50
     for participant in participants:
         if (participant.isUsed == False) & (budget > participant.price):
             random_participant = random.choice(participants)
-            circle = plt.Circle((random_participant.x, random_participant.y), 100, fill=False)
-            ax.add_artist(circle)
             budget=budget-random_participant.price
             if budget < 0:
                 break
+            circle = plt.Circle((random_participant.x, random_participant.y), 100, fill=False)
+            ax.add_artist(circle)
+            for i in participants:
+                dist_to_best = ((i.x - random_participant.x) ** 2 + (i.y - random_participant.y) ** 2) ** 0.5
+                if dist_to_best <= 100:
+                    i.isCovered = True
+
+def greedy(participants, ax):
+    budget=50
+    while (True):
+        lowest_price_participant = min([p for p in participants if (not p.isUsed) & (not p.isCovered)], key=lambda p: p.price, default=None)
+        if lowest_price_participant is None:
+            return  
+        circle = plt.Circle((lowest_price_participant.x, lowest_price_participant.y), 100, fill=False)
+        ax.add_artist(circle)
+        lowest_price_participant.isUsed = True
+        budget = budget - lowest_price_participant.price
+        if budget < 0:
+            break
+        for i in participants:
+            dist_to_best = ((i.x - lowest_price_participant.x) ** 2 + (i.y - lowest_price_participant.y) ** 2) ** 0.5
+            if dist_to_best <= 100:
+                i.isCovered = True
+
+def sloppy_greedy(participants, ax):
+    budget=50
+    while (True):
+        lowest_price_participant = min([p for p in participants if not p.isUsed], key=lambda p: p.price, default=None)
+        if lowest_price_participant is None:
+            return 
+        budget = budget - lowest_price_participant.price
+        if budget < 0:
+            break
+        circle = plt.Circle((lowest_price_participant.x, lowest_price_participant.y), 100, fill=False)
+        ax.add_artist(circle)
+        lowest_price_participant.isUsed = True
+        for i in participants:
+            dist_to_best = ((i.x - lowest_price_participant.x) ** 2 + (i.y - lowest_price_participant.y) ** 2) ** 0.5
+            if dist_to_best <= 100:
+                i.isCovered = True
+        
             
 # create 100 participants
 participants = [Participants() for _ in range(100)]
@@ -134,33 +189,57 @@ for price in prices1:
         colors1.append('blue')
     else:
         colors1.append('green')
-fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(10, 10))
-# fig, (ax3, ax4) = plt.subplots(nrows=1, ncols=2, figsize=(10, 10))
-# fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2, figsize=(10, 10))
 
-
-
-    
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(nrows=4, ncols=2, figsize=(10, 10))
+ 
 plot_coverage(participants,ax1)
 plot_coverage(participants2,ax2)
-# reset_participants(participants)
-# reset_participants(participants2)
-# create_circles(participants, ax3)
-# create_circles(participants2, ax4)
+print("Amount Covered by Cost/participants Distributed Algorithm:", amount_covered(participants))
+print("Amount Covered by Cost/participants Cluster Algorithm: ", amount_covered(participants2))
+reset_participants(participants)
+reset_participants(participants2)
+greedy(participants, ax3)
+greedy(participants2, ax4)
+print("Amount Covered by Greedy Distributed Algorthm: ", amount_covered(participants))
+print("Amount Covered by Greedy Cluster Algorithm: ", amount_covered(participants2))
+reset_participants(participants)
+reset_participants(participants2)
+sloppy_greedy(participants, ax5)
+sloppy_greedy(participants2, ax6)
+print("Amount Covered by Sloppy Greedy Distributed Algorthm: ", amount_covered(participants))
+print("Amount Covered by Sloppy Greedy Cluster Algorithm: ", amount_covered(participants2))
+reset_participants(participants)
+reset_participants(participants2)
+random_circles(participants, ax7)
+random_circles(participants2, ax8)
+print("Amount Covered by Random Distributed Algorthm: ", amount_covered(participants))
+print("Amount Covered by Random Cluster Algorithm: ", amount_covered(participants2))
 
 ax1.scatter(x, y, c=colors)
 ax2.scatter(x1, y1, c=colors1)
-# ax3.scatter(x, y, c=colors)
-# ax4.scatter(x1, y1, c=colors1)
+ax3.scatter(x, y, c=colors)
+ax4.scatter(x1, y1, c=colors1)
+ax5.scatter(x, y, c=colors)
+ax6.scatter(x1, y1, c=colors1)
+ax7.scatter(x, y, c=colors)
+ax8.scatter(x1, y1, c=colors1)
+ax1.set_title('Distributed')
+ax2.set_title('Cluster')
 
-ax1.set_title("Distributed")
-ax2.set_title("Cluster")
 for i, price in enumerate(prices):
-    ax1.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,10), ha='center')
+    ax1.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,1), ha='center')
 for i, price1 in enumerate(prices1):
-    ax2.annotate(str(price1), (x1[i], y1[i]), textcoords="offset points", xytext=(0,10), ha='center')
-# for i, price in enumerate(prices):
-#     ax3.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,10), ha='center')
-# for i, price1 in enumerate(prices1):
-#     ax4.annotate(str(price1), (x1[i], y1[i]), textcoords="offset points", xytext=(0,10), ha='center')
+    ax2.annotate(str(price1), (x1[i], y1[i]), textcoords="offset points", xytext=(0,1), ha='center')
+for i, price in enumerate(prices):
+    ax3.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,1), ha='center')
+for i, price1 in enumerate(prices1):
+    ax4.annotate(str(price1), (x1[i], y1[i]), textcoords="offset points", xytext=(0,1), ha='center')
+for i, price in enumerate(prices):
+    ax5.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,1), ha='center')
+for i, price1 in enumerate(prices1):
+    ax6.annotate(str(price1), (x1[i], y1[i]), textcoords="offset points", xytext=(0,1), ha='center')
+for i, price in enumerate(prices):
+    ax7.annotate(str(price), (x[i], y[i]), textcoords="offset points", xytext=(0,1), ha='center')
+for i, price1 in enumerate(prices1):
+    ax8.annotate(str(price1), (x1[i], y1[i]), textcoords="offset points", xytext=(0,1), ha='center')
 plt.show()
